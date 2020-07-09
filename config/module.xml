@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <defaultValues>
+        <name multilanguage="true">Лиды в битрикс 24</name>
+        <description multilanguage="true">потом опишу, пока не ясно какой функционал будет реализован</description>
+        <version>4.0.0</version>
+        <author>Melnikov Viktor</author>
+    </defaultValues>
+</config>
