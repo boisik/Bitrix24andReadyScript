@@ -17,19 +17,19 @@ class Handlers extends HandlerAbstract
      */
     function init()
     {
-        $this ->bind('orm.init.catalog-product');
+        $this ->bind('orm.init.catalog-offer');
 
     }
 
     /**
      * Добавляет вкладку Файлы к товару
      */
-    public static function ormInitCatalogProduct($product)
+    public static function ormInitCatalogOffer($offer)
     {
-        $product->getPropertyIterator()->append(array(
-            "Bitrix24",
+        $offer->getPropertyIterator()->append(array(
+
             'bitrix_id' => new Type\Integer(array(
-                'visible' => true,
+                'visible' => false,
                 'description' => t('Идентификатор в CRM B24'),
 
             )),

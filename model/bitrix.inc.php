@@ -51,23 +51,34 @@ class Bitrix
         return $response;
     }
 
-    function addProduct($product)
+    /**
+     * @param \Catalog\Model\Orm\Offer $offer
+     */
+
+    function addProduct($offer)
     {
+        /**
+         * @var \Catalog\Model\Orm\Product $product
+         */
+        $product = $offer->getProduct();
         $newProduct['fields']['ACTIVE'] = $product['public'] ? 'да' : 'нет';
-        $newProduct['fields']['DESCRIPTION'] = strip_tags($product->description, '<h3><ul><li><p><br>');
-        $newProduct['fields']['PRICE'] = $product->getCost();
-        $newProduct['fields']['NAME'] =$product['title'];
-        $main_image=$product->getMainImage();
+        $newProduct['fields']['DESCRIPTION'] = strip_tags($product->short_description, '<h3><ul><li><p><br>');
+        $newProduct['fields']['PRICE'] = str_replace(' ', '', $product->getCost(null,$offer->id));
+        $newProduct['fields']['NAME'] =$product['title']."__Комплектация__".$offer['title'];
+
+        $mainImageId = $offer->getMainPhotoId();
+        $mainImage = new \Photo\Model\Orm\Image($mainImageId);
         $http_request = HttpRequest::commonInstance();
         $request_host = $http_request->getProtocol() . '://' . $http_request->getDomainStr();
-        $imageUrl = $main_image->getOriginalUrl();
+        $imageUrl = $mainImage->getOriginalUrl();
         $newProduct['fields']['PREVIEW_PICTURE'] =$request_host.$imageUrl;
-        $newProduct['fields']['XML_ID'] =$product['xml_id'];
-        var_dump($newProduct);
+
+
+       var_dump($newProduct);
         $response = $this->requestToCRM($newProduct,"crm.product.add");
         if ($response['result']){
-            $product['bitrix_id'] = $response['result'];
-            $product->update();
+            $offer['bitrix_id'] = $response['result'];
+            $offer->update();
         }
         var_dump($response);
     }

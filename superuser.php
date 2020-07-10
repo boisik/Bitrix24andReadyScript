@@ -5,15 +5,16 @@ $bitrix = new \CrmB24\Model\Bitrix();
 
 $result  = \RS\Orm\Request::make()
     ->select()
-    ->from(new \Catalog\Model\Orm\Product())
+    ->from(new \Catalog\Model\Orm\Offer())
+  //  ->where('id'=='46')
     ->objects();
 
 
-foreach($result as $product){
-    if(empty($product['bitrix_id']))
-        {
-            $bitrix->addProduct($product);
-        }
+foreach($result as $offer){
+   // if(empty($offer['bitrix_id']))
+      //  {
+            $bitrix->addProduct($offer);
+      //  }
 
     }
 
