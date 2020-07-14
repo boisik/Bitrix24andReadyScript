@@ -18,11 +18,35 @@ class Handlers extends HandlerAbstract
     function init()
     {
         $this
+            ->bind('orm.beforewrite.feedback-resultitem')
+            ->bind('orm.afterwrite.shop-order')
             ->bind('orm.beforewrite.catalog-product')
             ->bind('orm.beforewrite.catalog-offer')
+            ->bind('orm.init.users-user')
             ->bind('orm.init.catalog-product')
             ->bind('orm.init.catalog-offer');
 
+    }
+
+    public static function ormAfterWriteShopOrder($params)
+    {
+
+        if (($params['flag'] == \RS\Orm\AbstractObject::INSERT_FLAG)) { //Если это создание заявки
+
+
+        }
+    }
+
+    public static function ormBeforeWriteFeedbackResultItem($params)
+    {
+
+        if (($params['flag'] == \RS\Orm\AbstractObject::INSERT_FLAG)) { //Если это создание заявки
+            /**
+             * Получаем из параметра ORM объект
+             * @var \Feedback\Model\Orm\ResultItem
+             */
+
+        }
     }
 
 
@@ -48,14 +72,29 @@ class Handlers extends HandlerAbstract
 
 
     public static function ormInitCatalogProduct($product)
+{
+    $product->getPropertyIterator()->append(array(
+
+
+        'bitrix_must_update' => new Type\Integer(array(
+            'visible' => false,
+            'description' => t('пора обновить в црмке'),
+            'default' => 0,
+
+        )),
+
+    ));
+}
+
+    public static function ormInitUsersUser($user)
     {
-        $product->getPropertyIterator()->append(array(
+        $user->getPropertyIterator()->append(array(
 
 
-            'bitrix_must_update' => new Type\Integer(array(
+            'bitrix_id' => new Type\Integer(array(
                 'visible' => false,
-                'description' => t('пора обновить в црмке'),
-                'default' => 0,
+                'description' => t('Идентификатор в CRM B24'),
+                'default' => null,
 
             )),
 
