@@ -19,10 +19,37 @@ class File extends ConfigObject
                 'default' => 'https://mavistep.bitrix24.ua/rest/28/4fpq17o0uuw8b72/'
             )),
 
-            'debug_mode' => new Type\Integer(array(
-                'description' => t('Режим отладки'),
+            'enable_log' => new Type\Integer(array(
+                'description' => t('вести логирование'),
                 'checkboxView' => array(1, 0)
             )),
         ));
+    }
+
+
+    /**
+     * Возвращает значения свойств по-умолчанию
+     *
+     * @return array
+     */
+    public static function getDefaultValues()
+    {
+        return parent::getDefaultValues() + array(
+                'tools' => array(
+
+                    array(
+                        'url' => \RS\Router\Manager::obj()->getAdminUrl('deleteLog', array(), 'crmb24-tools'),
+                        'title' => t('Очистить лог запросов'),
+                        'description' => t('Удаляет лог файл'),
+                    ),
+                    array(
+                        'url' => \RS\Router\Manager::obj()->getAdminUrl('showLog', array(), 'crmb24-tools'),
+                        'title' => t('Просмотреть лог запросов'),
+                        'description' => t('Открывает в новом окне журнал обмена данными с Бытрикс24 CRM '),
+                        'target' => '_blank',
+                        'class' => ' ',
+                    )
+                )
+            );
     }
 }

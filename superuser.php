@@ -1,22 +1,7 @@
 <?php
 require('setup.inc.php');
 
-$bitrix = new \CrmB24\Model\Bitrix();
-
-$result  = \RS\Orm\Request::make()
-    ->select()
-    ->from(new \Catalog\Model\Orm\Offer())
-  //  ->where('id'=='46')
-    ->objects();
+$bitrixProductApi = new \CrmB24\Model\Productapi();
 
 
-foreach($result as $offer){
-   // if(empty($offer['bitrix_id']))
-      //  {
-            $bitrix->addProduct($offer);
-      //  }
-
-    }
-
-
-
+$bitrixProductApi->createProducts();
