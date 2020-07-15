@@ -16,7 +16,7 @@ class Bitrix
     function __construct()
     {
         $this->config = \RS\Config\Loader::byModule('CrmB24');
-        $this->log_file = \RS\Helper\Log::file(\Setup::$PATH.\Setup::$STORAGE_DIR.'/logs/hatetrix.log');
+
     }
 
     function requestToCRM($data, $method)

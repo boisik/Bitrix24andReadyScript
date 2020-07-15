@@ -9,15 +9,10 @@
 namespace CrmB24\Model;
 use RS\Http\Request as HttpRequest;
 
-class OrderApi
+class OrderApi extends Bitrix
 {
-    public $bitrix;
 
-    function __construct()
-    {
-        $this->bitrix = new Bitrix();
 
-    }
 
     /**
      * @param \Shop\Model\Orm\Order $order

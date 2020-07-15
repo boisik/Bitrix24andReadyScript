@@ -9,20 +9,41 @@
 namespace CrmB24\Model;
 use RS\Http\Request as HttpRequest;
 
-class UserApi
+class UserApi extends Bitrix
 {
-    public $bitrix;
+    const ADD_USER_REQ = 'crm.contact.add';
 
-    function __construct()
+
+    /**
+     * @param \Users\Model\Orm\User $user
+     */
+    public function addUser($user)
     {
-        $this->bitrix = new Bitrix();
+        $newUser['fields']['NAME'] = $user->name;
+        $newUser['fields']['LAST_NAME'] = $user->surname;
+        $newUser['fields']['PHONE']['VALUE'] = $user->phone;
+        $newUser['fields']['PHONE']['TYPE'] = 'WORK';
+        $newUser['fields']['EMAIL']['VALUE'] = $user->e_mail;
+        $newUser['fields']['EMAIL']['TYPE'] = 'WORK';
 
+        Log::write('Добавление клиента_'.$newUser['fields']['NAME']."_".$newUser['fields']['LAST_NAME']);
+        $response = $this->requestToCRM($newUser,self::ADD_USER_REQ);
+        if ($response['result']){
+            Log::write('Присваивается идентификатор_'.$response['result']);
+
+            if (isset($user->id)){
+                \RS\Orm\Request::make()
+                    ->update(new \Users\Model\Orm\User())
+                    ->set(array('bitrix_id' => $response['result'],))
+                    ->where(array(
+                        'id' => $user->id,
+
+                    ))->exec();
+            }
+
+            return $response['result'];
+        }
+
+        return 0;
     }
-
-    public function addUser()
-    {
-
-    }
-
-
 }

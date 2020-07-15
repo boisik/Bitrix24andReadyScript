@@ -9,15 +9,13 @@
 namespace CrmB24\Model;
 use RS\Http\Request as HttpRequest;
 
-class Productapi
+class Productapi extends Bitrix
 {
-    public $bitrix;
+    const ADD_PRODUCT_REQ = 'crm.product.add';
+    const UPDATE_PRODUCT_REQ = 'crm.product.update';
 
-    function __construct()
-    {
-        $this->bitrix = new Bitrix();
 
-    }
+
 
     function createProducts()
     {
@@ -85,7 +83,7 @@ class Productapi
 
 
         Log::write('Обновление_'.$newProduct['fields']['NAME']);
-        $response = $this->bitrix->requestToCRM($newProduct,"crm.product.update");
+        $response = $this->requestToCRM($newProduct,self::UPDATE_PRODUCT_REQ);
 
         if ($response['result']){
             Log::write('Обновлен _'.$offer['bitrix_id']);
@@ -140,7 +138,7 @@ class Productapi
 
 
         Log::write('Импорт_'.$newProduct['fields']['NAME']);
-        $response = $this->bitrix->requestToCRM($newProduct,"crm.product.add");
+        $response = $this->requestToCRM($newProduct,self::ADD_PRODUCT_REQ);
         if ($response['result']){
             Log::write('Присваивается идентификатор_'.$response['result']);
             $offer['bitrix_id'] = $response['result'];
