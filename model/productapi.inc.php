@@ -30,7 +30,8 @@ class Productapi extends Bitrix
             foreach($result as $offer){
                 $this->addProduct($offer);
             }
-        }
+            Log::write("__________КОНЕЦ");
+
 
 
     }

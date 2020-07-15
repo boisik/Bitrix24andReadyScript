@@ -4,6 +4,7 @@ namespace CrmB24\Config;
 
 use RS\Event\HandlerAbstract;
 use \CrmB24\Model\UserApi;
+use \CrmB24\Model\OrderApi;
 use \RS\Orm\Type;
 /**
  * Класс содержит обработчики событий, на которые подписан модуль
@@ -24,6 +25,7 @@ class Handlers extends HandlerAbstract
             ->bind('orm.beforewrite.catalog-offer')
             ->bind('orm.beforewrite.users-user')
             ->bind('orm.init.users-user')
+            ->bind('orm.init.shop-order')
             ->bind('orm.init.catalog-product')
             ->bind('orm.init.catalog-offer');
 
@@ -43,8 +45,8 @@ class Handlers extends HandlerAbstract
     {
 
         if (($params['flag'] == \RS\Orm\AbstractObject::INSERT_FLAG)) { //Если это создание заявки
-
-
+            $orderApi = new OrderApi();
+            $orderApi->addOrder($params['orm']);
         }
     }
 
@@ -83,9 +85,8 @@ class Handlers extends HandlerAbstract
 
 
     public static function ormInitCatalogProduct($product)
-{
-    $product->getPropertyIterator()->append(array(
-
+    {
+        $product->getPropertyIterator()->append(array(
 
         'bitrix_must_update' => new Type\Integer(array(
             'visible' => false,
@@ -95,7 +96,7 @@ class Handlers extends HandlerAbstract
         )),
 
     ));
-}
+    }
 
     public static function ormInitUsersUser($user)
     {
@@ -111,6 +112,22 @@ class Handlers extends HandlerAbstract
 
         ));
     }
+
+    public static function ormInitShopOrder($order)
+    {
+        $order->getPropertyIterator()->append(array(
+
+
+            'bitrix_id' => new Type\Integer(array(
+                'visible' => false,
+                'description' => t('Идентификатор в CRM B24'),
+                'default' => null,
+
+            )),
+
+        ));
+    }
+
 
     /**
      * Обрабатывает привязку файлов при создании товара
