@@ -19,21 +19,21 @@ class Productapi extends Bitrix
 
     function createProducts()
     {
-        $result  = \RS\Orm\Request::make()
+        $result = \RS\Orm\Request::make()
             ->select()
             ->from(new \Catalog\Model\Orm\Offer())
-           // ->where('bitrix_id IS NULL')
+            // ->where('bitrix_id IS NULL')
             ->objects();
 
-        if (!empty($result)){
-            Log::write('Импорту подлежит_'.count($result)."_товаров");
-            foreach($result as $offer){
+        if (!empty($result)) {
+            Log::write('Импорту подлежит_' . count($result) . "_товаров");
+            foreach ($result as $offer) {
                 $this->addProduct($offer);
             }
             Log::write("__________КОНЕЦ");
 
 
-
+        }
     }
 
     function updateProducts()
@@ -69,7 +69,7 @@ class Productapi extends Bitrix
          */
         $product = $offer->getProduct();
         $newProduct['id']= $offer['bitrix_id'];
-        $newProduct['fields']['ACTIVE'] = $product['public'] ? 'да' : 'нет';
+       // $newProduct['fields']['ACTIVE'] = $product['public'] ? 'да' : 'нет';
         $newProduct['fields']['DESCRIPTION'] = strip_tags($product->short_description, '<h3><ul><li><p><br>');
         $newProduct['fields']['PRICE'] = str_replace(' ', '', $product->getCost(null,$offer->id));
         $offerTitle = ($offer['title']) ? "__Комплектация__".$offer['title']: ' ';
