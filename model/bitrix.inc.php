@@ -45,7 +45,7 @@ class Bitrix
         if (isset($response['error'])) {
             $text = "\ndate: ".date('d.m.Y h:i:s A')."\nmethod: $method";
             Log::write($text);
-            Log::write($data);
+            Log::write($response['error_description']);
         }
 
         return $response;

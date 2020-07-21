@@ -13,6 +13,7 @@ class OrderApi extends Bitrix
 {
     const ADD_ORDER_REQ = 'crm.deal.add';
     const ADD_PRODUCT_TO_ORDER_REQ = 'crm.deal.productrows.set';
+    const ADD_CONTACT_TO_ORDER_REQ = 'crm.deal.contact.add';
 
 
     /**
@@ -20,8 +21,7 @@ class OrderApi extends Bitrix
      */
     public function addOrder($order)
     {
-        echo ("<pre>");
-        var_dump($order);die();
+
         $newOrder['fields']['TITLE'] = $order['order_num'].' Заказ с сайта ТЕСТ '.$_SERVER['SERVER_NAME'];
         $newOrder['fields']['STAGE_ID'] = "NEW";
         $newOrder['fields']['TYPE_ID'] = "GOODS";
@@ -33,14 +33,8 @@ class OrderApi extends Bitrix
         $newOrder['fields']['UTM_SOURCE'] = $order['utm_source'];
         $newOrder['fields']['UTM_MEDIUM'] = $order['utm_medium'];
         $newOrder['params']['REGISTER_SONET_EVENT'] = "Y";
-       /* $user = $order->getUser();
-        if (!isset($user['bitrix_id'])){
-            $userApi = new UserApi();
-            $bitrixUserId = $userApi->addUser($user);
-        }else{
-            $bitrixUserId =   $user['bitrix_id'];
-        }
-        $newOrder['fields']['ASSIGNED_BY_ID'] = $bitrixUserId;*/
+
+       // $newOrder['fields']['ASSIGNED_BY_ID'] = $bitrixUserId;
         //$newOrder['fields']['ASSIGNED_BY_ID'] = 1 ;
             Log::write('Экспорт заказа '.$order['num']);
 
@@ -54,12 +48,35 @@ class OrderApi extends Bitrix
         }
 
         $this->addProducts($order);
-
+        $this->addContact($order);
     }
+
 
     /**
      * @param \Shop\Model\Orm\Order $order
      */
+    public function addContact($order)
+    {
+
+         $user = $order->getUser();
+       if (!isset($user['bitrix_id'])){
+           $userApi = new UserApi();
+           $bitrixUserId = $userApi->addUser($user);
+       }else{
+           $bitrixUserId =   $user['bitrix_id'];
+       }
+       $userInfo = array();
+        $userInfo['id'] =$order['bitrix_id'] ;
+        $userInfo['fields']['CONTACT_ID '] = (integer)$bitrixUserId;
+        Log::write('Добавление контакта к заказу '.$order['bitrix_id']);
+
+        $response = $this->requestToCRM($userInfo,self::ADD_CONTACT_TO_ORDER_REQ);
+        var_dump($response);
+   }
+
+   /**
+    * @param \Shop\Model\Orm\Order $order
+    */
 
     public function addProducts($order)
     {
@@ -87,7 +104,7 @@ class OrderApi extends Bitrix
 
         $response = $this->requestToCRM($productsInfo,self::ADD_PRODUCT_TO_ORDER_REQ);
 
-        var_dump($response);
+
     }
 
 

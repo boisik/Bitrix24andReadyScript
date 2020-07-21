@@ -1,7 +1,13 @@
 <?php
 require('setup.inc.php');
+$result = \RS\Orm\Request::make()
+    ->select()
+    ->from(new \Shop\Model\Orm\Order())
+    // ->where('bitrix_id IS NULL')
+    ->object();
 
-$bitrixProductApi = new \CrmB24\Model\Productapi();
+$bitrixOrderApi = new \CrmB24\Model\OrderApi();
 
-
-$bitrixProductApi->createProducts();
+$resp = $bitrixOrderApi->requestToCRM(null,'crm.deal.contact.fields');
+var_dump($resp);
+//$bitrixOrderApi->addOrder($result);
