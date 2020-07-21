@@ -68,7 +68,7 @@ class Handlers extends HandlerAbstract
         $offer->getPropertyIterator()->append(array(
 
             'bitrix_id' => new Type\Integer(array(
-                'visible' => false,
+               // 'visible' => false,
                 'description' => t('Идентификатор в CRM B24'),
                 'default' => null,
 
@@ -104,7 +104,7 @@ class Handlers extends HandlerAbstract
 
 
             'bitrix_id' => new Type\Integer(array(
-                'visible' => false,
+              //  'visible' => false,
                 'description' => t('Идентификатор в CRM B24'),
                 'default' => null,
 
@@ -119,7 +119,7 @@ class Handlers extends HandlerAbstract
 
 
             'bitrix_id' => new Type\Integer(array(
-                'visible' => false,
+              //  'visible' => false,
                 'description' => t('Идентификатор в CRM B24'),
                 'default' => null,
 

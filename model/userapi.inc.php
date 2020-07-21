@@ -31,7 +31,7 @@ class UserApi extends Bitrix
         if ($response['result']){
             Log::write('Присваивается идентификатор_'.$response['result']);
 
-            if (isset($user->id)){
+            //if (isset($user->id)){
                 \RS\Orm\Request::make()
                     ->update(new \Users\Model\Orm\User())
                     ->set(array('bitrix_id' => $response['result'],))
@@ -39,7 +39,7 @@ class UserApi extends Bitrix
                         'id' => $user->id,
 
                     ))->exec();
-            }
+           // }
 
             return $response['result'];
         }

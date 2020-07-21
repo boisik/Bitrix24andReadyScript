@@ -20,25 +20,32 @@ class OrderApi extends Bitrix
      */
     public function addOrder($order)
     {
-        $newOrder['fields']['TITLE'] = "Заказ с сайта ".$order['num'];
+        echo ("<pre>");
+        var_dump($order);die();
+        $newOrder['fields']['TITLE'] = $order['order_num'].' Заказ с сайта ТЕСТ '.$_SERVER['SERVER_NAME'];
         $newOrder['fields']['STAGE_ID'] = "NEW";
         $newOrder['fields']['TYPE_ID'] = "GOODS";
         $newOrder['fields']['OPENED'] = "Y";
         $newOrder['fields']['OPPORTUNITY'] = $order['totalcost'];
-        $newOrder['fields']['BEGINDATE'] = $order['dateof'];
+        $newOrder['fields']['UTM_CAMPAIGN'] = $order['utm_campaign'];
+        $newOrder['fields']['UTM_CONTENT'] = $order['utm_content'];
+        $newOrder['fields']['UTM_TERM'] = $order['utm_term'];
+        $newOrder['fields']['UTM_SOURCE'] = $order['utm_source'];
+        $newOrder['fields']['UTM_MEDIUM'] = $order['utm_medium'];
         $newOrder['params']['REGISTER_SONET_EVENT'] = "Y";
-        $user = $order->getUser();
+       /* $user = $order->getUser();
         if (!isset($user['bitrix_id'])){
             $userApi = new UserApi();
             $bitrixUserId = $userApi->addUser($user);
         }else{
             $bitrixUserId =   $user['bitrix_id'];
         }
-        $newOrder['fields']['ASSIGNED_BY_ID'] = $bitrixUserId;
+        $newOrder['fields']['ASSIGNED_BY_ID'] = $bitrixUserId;*/
+        //$newOrder['fields']['ASSIGNED_BY_ID'] = 1 ;
+            Log::write('Экспорт заказа '.$order['num']);
 
-        Log::write('Экспорт заказа '.$order['num']);
         $response = $this->requestToCRM($newOrder,self::ADD_ORDER_REQ);
-//var_dump($response);die();
+
         if ($response['result']){
             Log::write('Экспортирован _'.$response['result']);
             $order['bitrix_id'] = $response['result'];
@@ -73,7 +80,7 @@ class OrderApi extends Bitrix
             $productInfo['QUANTITY'] = $cartitem['amount'];
 
 
-            $productsInfo['id']['rows'][]= $productInfo;
+            $productsInfo['rows'][]= $productInfo;
 
         }
         Log::write('Добавление товаров к заказу '.$order['bitrix_id']);
