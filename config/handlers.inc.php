@@ -27,6 +27,7 @@ class Handlers extends HandlerAbstract
             ->bind('orm.init.users-user')
             ->bind('orm.init.shop-order')
             ->bind('orm.init.catalog-product')
+            ->bind('orm.init.feedback-resultitem')
             ->bind('orm.init.catalog-offer');
 
     }
@@ -60,6 +61,22 @@ class Handlers extends HandlerAbstract
              */
 
         }
+    }
+
+    public static function ormInitFeedbackResultItem($item)
+    {
+
+        $item->getPropertyIterator()->append(array(
+
+
+            'bitrix_id' => new Type\Integer(array(
+                //  'visible' => false,
+                'description' => t('Идентификатор в CRM B24'),
+                'default' => null,
+
+            )),
+
+        ));
     }
 
 

@@ -18,8 +18,13 @@ class File extends ConfigObject
                 'hint' => t('Создается в ЛК CRMки'),
                 'default' => 'https://mavistep.bitrix24.ua/rest/28/4fpq17o0uuw8b72/'
             )),
-            'id_lead_manager' => new Type\Varchar(array(
+            'id_deal_manager' => new Type\Varchar(array(
                 'description' => t('идентификтор менеджера обработки сделок в CRM'),
+                'hint' => t('нужно посмотреть в CRM идентификатор сотрудника, и вписать.'),
+
+            )),
+            'id_lead_manager' => new Type\Varchar(array(
+                'description' => t('идентификтор менеджера обработки лидов в CRM'),
                 'hint' => t('нужно посмотреть в CRM идентификатор сотрудника, и вписать.'),
 
             )),
