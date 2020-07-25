@@ -20,14 +20,31 @@ class LeadApi extends Bitrix
      */
     public function addLead($item)
     {
+        $form = \Feedback\Model\Orm\FormItem::loadByWhere(array(
+            'id' => $item->form_id
+        ));
+
+        $data = $item->tableDataUnserialized();
+        $leadData = array();
+        foreach ($data as $key => $FormFieldItem){
+            $leadData[$key]['name'] = $FormFieldItem['field']['title'];
+            $leadData[$key]['value'] = $FormFieldItem['value'];
+        }
+
+        $newLead['fields']['TITLE']     = $form['title'].' с сайта '.$_SERVER['SERVER_NAME'];
+        $newLead['fields']['STATUS_ID'] = 'NEW';
+        $newLead['fields']['OPENED']    = 'Y';
 
 
-        //$newLead['fields']['TITLE'] = $order['order_num'].' Заказ с сайта ТЕСТ '.$_SERVER['SERVER_NAME'];
 
+        //$newLead['fields']['ASSIGNED_BY_ID']
+            foreach ($data as $key => $FormFieldItem){
+                $newLead['fields']['COMMENTS'] .= $FormFieldItem['field']['title'].' : '.$FormFieldItem['value'].'<br>';
 
-        // $newOrder['fields']['ASSIGNED_BY_ID'] = $bitrixUserId;
-        //$newOrder['fields']['ASSIGNED_BY_ID'] = 1 ;
+            }
+
         Log::write('Экспорт Лида');
+
 
         $response = $this->requestToCRM($newLead,self::ADD_LEAD_REQ);
 
