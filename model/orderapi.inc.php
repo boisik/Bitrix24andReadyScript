@@ -22,7 +22,7 @@ class OrderApi extends Bitrix
     public function addOrder($order)
     {
 
-        $newOrder['fields']['TITLE'] = $order['order_num'].' Заказ с сайта ТЕСТ '.$_SERVER['SERVER_NAME'];
+        $newOrder['fields']['TITLE'] = $order['order_num'].' Заказ с сайта '.$_SERVER['SERVER_NAME'];
         $newOrder['fields']['STAGE_ID'] = "NEW";
         $newOrder['fields']['TYPE_ID'] = "GOODS";
         $newOrder['fields']['OPENED'] = "Y";
@@ -33,6 +33,10 @@ class OrderApi extends Bitrix
         $newOrder['fields']['UTM_SOURCE'] = $order['utm_source'];
         $newOrder['fields']['UTM_MEDIUM'] = $order['utm_medium'];
         $newOrder['params']['REGISTER_SONET_EVENT'] = "Y";
+        $delivery = $order->getDelivery();
+        $payment = $order->getPayment();
+
+        $newOrder['fields']['COMMENTS'].= 'Доставка  : '.$delivery['title'].'<br>'.'Оплата :'.$payment['title'];
 
        // $newOrder['fields']['ASSIGNED_BY_ID'] = $bitrixUserId;
         //$newOrder['fields']['ASSIGNED_BY_ID'] = 1 ;
@@ -67,7 +71,7 @@ class OrderApi extends Bitrix
        }
        $userInfo = array();
         $userInfo['id'] =$order['bitrix_id'] ;
-        $userInfo['fields']['CONTACT_ID '] = (integer)$bitrixUserId;
+        $userInfo['fields']['CONTACT_ID'] = (integer)$bitrixUserId;
         Log::write('Добавление контакта к заказу '.$order['bitrix_id']);
 
         $response = $this->requestToCRM($userInfo,self::ADD_CONTACT_TO_ORDER_REQ);
