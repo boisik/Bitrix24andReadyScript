@@ -35,11 +35,16 @@ class OrderApi extends Bitrix
         $newOrder['params']['REGISTER_SONET_EVENT'] = "Y";
         $delivery = $order->getDelivery();
         $payment = $order->getPayment();
+        $address = $order->getAddress();
+        $customAddres = isset($address['addr_address']) ? $address['addr_address'] : 'Hе заполнено';
+        $newOrder['fields']['COMMENTS'].=
+            'Доставка  : '.$delivery['title'].
+            '<br>'.'Адрес :'.$customAddres.
+            '<br>'.'Оплата :'.$payment['title'];
 
-        $newOrder['fields']['COMMENTS'].= 'Доставка  : '.$delivery['title'].'<br>'.'Оплата :'.$payment['title'];
 
-       // $newOrder['fields']['ASSIGNED_BY_ID'] = $bitrixUserId;
-        //$newOrder['fields']['ASSIGNED_BY_ID'] = 1 ;
+        $newOrder['fields']['ASSIGNED_BY_ID'] = $this->config->id_deal_manager;
+
             Log::write('Экспорт заказа '.$order['num']);
 
         $response = $this->requestToCRM($newOrder,self::ADD_ORDER_REQ);

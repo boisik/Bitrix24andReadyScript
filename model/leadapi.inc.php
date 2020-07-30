@@ -37,7 +37,7 @@ class LeadApi extends Bitrix
 
 
 
-        //$newLead['fields']['ASSIGNED_BY_ID']
+        $newLead['fields']['ASSIGNED_BY_ID'] = $this->config->id_lead_manager;
             foreach ($data as $key => $FormFieldItem){
                 $newLead['fields']['COMMENTS'] .= $FormFieldItem['field']['title'].' : '.$FormFieldItem['value'].'<br>';
 

@@ -9,7 +9,7 @@
 namespace CrmB24\Model;
 use RS\Http\Request as HttpRequest;
 
-class Productapi extends Bitrix
+class ProductApi extends Bitrix
 {
     const ADD_PRODUCT_REQ = 'crm.product.add';
     const UPDATE_PRODUCT_REQ = 'crm.product.update';
@@ -22,7 +22,7 @@ class Productapi extends Bitrix
         $result = \RS\Orm\Request::make()
             ->select()
             ->from(new \Catalog\Model\Orm\Offer())
-            // ->where('bitrix_id IS NULL')
+            ->where('bitrix_id IS NULL')
             ->objects();
 
         if (!empty($result)) {

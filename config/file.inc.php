@@ -33,6 +33,10 @@ class File extends ConfigObject
                 'description' => t('вести логирование'),
                 'checkboxView' => array(1, 0)
             )),
+            'enable_products_import' => new Type\Integer(array(
+                'description' => t('при следующих запусках крона импортировать\обновить товары'),
+                'checkboxView' => array(1, 0)
+            )),
         ));
     }
 

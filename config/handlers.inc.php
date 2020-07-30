@@ -5,6 +5,7 @@ namespace CrmB24\Config;
 use RS\Event\HandlerAbstract;
 use \CrmB24\Model\UserApi;
 use \CrmB24\Model\OrderApi;
+use \CrmB24\Model\Productapi;
 use \RS\Orm\Type;
 /**
  * Класс содержит обработчики событий, на которые подписан модуль
@@ -19,6 +20,7 @@ class Handlers extends HandlerAbstract
     function init()
     {
         $this
+            ->bind('cron')
             ->bind('orm.beforewrite.feedback-resultitem')
             ->bind('orm.afterwrite.shop-order')
             ->bind('orm.beforewrite.catalog-product')
@@ -29,6 +31,22 @@ class Handlers extends HandlerAbstract
             ->bind('orm.init.catalog-product')
             ->bind('orm.init.feedback-resultitem')
             ->bind('orm.init.catalog-offer');
+
+    }
+
+    /**
+     * Вызывается по расписанию (обычно раз в минуту)
+     *
+     * @param array $params массив вида ["last_time" => "1452777134", "current_time" => 1452777135, "minutes" => [100,101,102]]
+     */
+    public static function cron($params)
+    {
+        $config = \RS\Config\Loader::byModule('CrmB24');
+        if ($config->enable_products_import){
+            $productApi = new ProductApi();
+            $productApi->createProducts();
+            $productApi->updateProducts();
+        }
 
     }
 
@@ -153,7 +171,7 @@ class Handlers extends HandlerAbstract
     {
         $product = $params['orm'];
         if (!$product->runtimeUpdate){
-             if ($product->isModified('title') || $product->isModified('short_description') || $product->isModified('public')) {
+             if ($product->isModified('title') || $product->isModified('short_description')) {
                  $product['bitrix_must_update'] = 1;
              }
          }
