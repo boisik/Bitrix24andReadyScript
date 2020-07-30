@@ -29,6 +29,7 @@ class ProductApi extends Bitrix
             Log::write('Импорту подлежит_' . count($result) . "_товаров");
             foreach ($result as $offer) {
                 $this->addProduct($offer);
+                time_nanosleep(0, 400000000);
             }
             Log::write("__________КОНЕЦ");
 
