@@ -36,7 +36,10 @@ class OrderApi extends Bitrix
         $delivery = $order->getDelivery();
         $payment = $order->getPayment();
         $address = $order->getAddress();
-        $customAddres = isset($address['addr_address']) ? $address['addr_address'] : 'Hе заполнено';
+		echo ('<pre>');
+		var_dump($newOrder);
+		die();
+        $customAddres = isset($address['addr_address']) ? $address['addr_address'] : $address["address"];
         $newOrder['fields']['COMMENTS'].=
             'Доставка  : '.$delivery['title'].
             '<br>'.'Адрес :'.$customAddres.
@@ -102,13 +105,23 @@ class OrderApi extends Bitrix
                 $offer['bitrix_id'] = $productApi->addProduct($offer);
             }
             $productInfo['PRODUCT_ID'] = $offer['bitrix_id'];
-            $productInfo['PRICE'] = $cartitem['single_cost'];
+            $productInfo['PRICE'] = $cartitem['single_cost'] - $cartitem['discount'];
             $productInfo['QUANTITY'] = $cartitem['amount'];
-
+            $productInfo["DISCOUNT_SUM"] = $cartitem['discount'];
 
             $productsInfo['rows'][]= $productInfo;
 
         }
+        $items = $order->getcart()->getCartItemsByType('commission');
+        if ($items){
+            foreach($items as $uniq=>$item){
+                $comission['PRODUCT_NAME'] = $item['title'];
+                $comission['PRICE'] = $item['price'];
+                $productsInfo['rows'][] = $comission;
+            }
+        }
+
+
         Log::write('Добавление товаров к заказу '.$order['bitrix_id']);
 
         $response = $this->requestToCRM($productsInfo,self::ADD_PRODUCT_TO_ORDER_REQ);

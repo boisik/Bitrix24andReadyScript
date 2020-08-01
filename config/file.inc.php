@@ -28,13 +28,29 @@ class File extends ConfigObject
                 'hint' => t('нужно посмотреть в CRM идентификатор сотрудника, и вписать.'),
 
             )),
+            'enable_lead' => new Type\Integer(array(
+                'description' => t('Импортировать Лиды'),
+                'checkboxView' => array(1, 0)
+            )),
+            'enable_deal' => new Type\Integer(array(
+                'description' => t('Импортировать Сделки'),
+                'checkboxView' => array(1, 0)
+            )),
 
             'enable_log' => new Type\Integer(array(
                 'description' => t('вести логирование'),
                 'checkboxView' => array(1, 0)
             )),
             'enable_products_import' => new Type\Integer(array(
-                'description' => t('при следующих запусках крона импортировать\обновить товары'),
+                'description' => t('при следующих запусках крона импортировать товары'),
+                'checkboxView' => array(1, 0)
+            )),
+            'enable_products_update' => new Type\Integer(array(
+                'description' => t('при следующих запусках крона обновить товары'),
+                'checkboxView' => array(1, 0)
+            )),
+            'enable_products_delete' => new Type\Integer(array(
+                'description' => t('при следующих запусках крона удалить товары'),
                 'checkboxView' => array(1, 0)
             )),
         ));
