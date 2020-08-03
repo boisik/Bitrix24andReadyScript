@@ -19,13 +19,14 @@ class UserApi extends Bitrix
      */
     public function addUser($user)
     {
-        $newUser['fields']['NAME'] = (isset($user->name)) ? $user->name :"Не указан";
-        $newUser['fields']['LAST_NAME'] = (isset($user->surname)) ? $user->name :"Не указан";
+        $newUser['fields']['NAME'] = (isset($user['name'])) ? $user['name'] :"Не указан";
+        $newUser['fields']['LAST_NAME'] = (isset($user['surname'])) ? $user['surname'] :"Не указан";
 		  
         $newUser['fields']['PHONE'][0]['VALUE'] = $user->phone;
         $newUser['fields']['PHONE'][0]['TYPE'] = 'WORK';
         $newUser['fields']['EMAIL'][0] =  	array('VALUE' => $user->e_mail,"VALUE_TYPE"=>"WORK");
-      
+    
+	 
         Log::write('Добавление клиента_'.$newUser['fields']['NAME']."_".$newUser['fields']['LAST_NAME']);
         $response = $this->requestToCRM($newUser,self::ADD_USER_REQ);
 		
