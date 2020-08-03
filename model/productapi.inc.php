@@ -13,7 +13,8 @@ class ProductApi extends Bitrix
 {
     const ADD_PRODUCT_REQ = 'crm.product.add';
     const UPDATE_PRODUCT_REQ = 'crm.product.update';
-
+    const GETLIST_PRODUCT_REQ = 'crm.product.list';
+    const DELETE_PRODUCT_REQ = 'crm.product.delete';
 
 
 
@@ -148,6 +149,42 @@ class ProductApi extends Bitrix
             $offer->update();
         }
 
+    }
+
+    /**
+     * Удаляет товары
+     */
+
+    function deleteAllProducts()
+    {
+        $params['order']['NAME'] = ["ASC"];
+        $params['select']        = [ "ID", "NAME"];
+
+        $response = $this->requestToCRM($params,self::GETLIST_PRODUCT_REQ);
+        foreach ($response['result'] as $one){
+            $this->deleteProduct($one['ID']);
+            time_nanosleep(0, 400000000);
+        }
+        if (is_int($response['next'])){
+            $this->deleteAllProducts();
+        }
+        Log::write('Ну, вроде бы, все.');
+    }
+
+    /**
+     * Удаляет товар
+     * @param string $id идентификатор товара в CRM
+     */
+
+    function deleteProduct($id)
+    {
+
+        Log::write('Удаление товара_'.$id);
+        $params['id'] = $id;
+        $response = $this->requestToCRM($params,self::DELETE_PRODUCT_REQ);
+        if ($response['result']){
+            Log::write('Удален');
+        }
     }
 
 

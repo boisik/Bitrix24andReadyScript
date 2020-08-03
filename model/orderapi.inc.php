@@ -33,10 +33,26 @@ class OrderApi extends Bitrix
         $newOrder['fields']['UTM_SOURCE'] = $order['utm_source'];
         $newOrder['fields']['UTM_MEDIUM'] = $order['utm_medium'];
         $newOrder['params']['REGISTER_SONET_EVENT'] = "Y";
+		
+		if (empty($order['utm_source'])){
+			$source=$order->getSource();
+			$type=$source->getType();
+			$newOrder['fields']['UTM_SOURCE'] = $type['title'];
+		}
+
         $delivery = $order->getDelivery();
         $payment = $order->getPayment();
         $address = $order->getAddress();
-        $customAddres = isset($address['addr_address']) ? $address['addr_address'] : 'Hе заполнено';
+		
+		if(isset($address['addr_address'])){
+			$customAddres =$address['addr_address'];
+		}elseif(isset($address['city'])){
+			$customAddres =$address['city'];		
+		}elseif(isset($address['address'])){
+			$customAddres =$address['address'];
+		}
+		
+        
         $newOrder['fields']['COMMENTS'].=
             'Доставка  : '.$delivery['title'].
             '<br>'.'Адрес :'.$customAddres.
@@ -48,7 +64,7 @@ class OrderApi extends Bitrix
             Log::write('Экспорт заказа '.$order['num']);
 
         $response = $this->requestToCRM($newOrder,self::ADD_ORDER_REQ);
-
+ 
         if ($response['result']){
             Log::write('Экспортирован _'.$response['result']);
             $order['bitrix_id'] = $response['result'];
@@ -68,7 +84,9 @@ class OrderApi extends Bitrix
     {
 
          $user = $order->getUser();
+		
        if (!isset($user['bitrix_id'])){
+		   
            $userApi = new UserApi();
            $bitrixUserId = $userApi->addUser($user);
        }else{
@@ -102,13 +120,23 @@ class OrderApi extends Bitrix
                 $offer['bitrix_id'] = $productApi->addProduct($offer);
             }
             $productInfo['PRODUCT_ID'] = $offer['bitrix_id'];
-            $productInfo['PRICE'] = $cartitem['single_cost'];
+            $productInfo['PRICE'] = $cartitem['single_cost'] - $cartitem['discount'];
             $productInfo['QUANTITY'] = $cartitem['amount'];
-
+            $productInfo["DISCOUNT_SUM"] = $cartitem['discount'];
 
             $productsInfo['rows'][]= $productInfo;
 
         }
+        $items = $order->getcart()->getCartItemsByType('commission');
+        if ($items){
+            foreach($items as $uniq=>$item){
+                $comission['PRODUCT_NAME'] = $item['title'];
+                $comission['PRICE'] = $item['price'];
+                $productsInfo['rows'][] = $comission;
+            }
+        }
+
+
         Log::write('Добавление товаров к заказу '.$order['bitrix_id']);
 
         $response = $this->requestToCRM($productsInfo,self::ADD_PRODUCT_TO_ORDER_REQ);

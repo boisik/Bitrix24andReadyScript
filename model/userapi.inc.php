@@ -19,15 +19,16 @@ class UserApi extends Bitrix
      */
     public function addUser($user)
     {
-        $newUser['fields']['NAME'] = $user->name;
-        $newUser['fields']['LAST_NAME'] = $user->surname;
-        $newUser['fields']['PHONE']['VALUE'] = $user->phone;
-        $newUser['fields']['PHONE']['TYPE'] = 'WORK';
-        $newUser['fields']['EMAIL']['VALUE'] = $user->e_mail;
-        $newUser['fields']['EMAIL']['TYPE'] = 'WORK';
-
+        $newUser['fields']['NAME'] = (isset($user->name)) ? $user->name :"Не указан";
+        $newUser['fields']['LAST_NAME'] = (isset($user->surname)) ? $user->name :"Не указан";
+		  
+        $newUser['fields']['PHONE'][0]['VALUE'] = $user->phone;
+        $newUser['fields']['PHONE'][0]['TYPE'] = 'WORK';
+        $newUser['fields']['EMAIL'][0] =  	array('VALUE' => $user->e_mail,"VALUE_TYPE"=>"WORK");
+      
         Log::write('Добавление клиента_'.$newUser['fields']['NAME']."_".$newUser['fields']['LAST_NAME']);
         $response = $this->requestToCRM($newUser,self::ADD_USER_REQ);
+		
         if ($response['result']){
             Log::write('Присваивается идентификатор_'.$response['result']);
 

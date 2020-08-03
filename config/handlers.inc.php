@@ -6,6 +6,7 @@ use RS\Event\HandlerAbstract;
 use \CrmB24\Model\UserApi;
 use \CrmB24\Model\OrderApi;
 use \CrmB24\Model\Productapi;
+use \CrmB24\Model\LeadApi;
 use \RS\Orm\Type;
 /**
  * Класс содержит обработчики событий, на которые подписан модуль
@@ -42,10 +43,21 @@ class Handlers extends HandlerAbstract
     public static function cron($params)
     {
         $config = \RS\Config\Loader::byModule('CrmB24');
+        $productApi = new ProductApi();
         if ($config->enable_products_import){
-            $productApi = new ProductApi();
+
             $productApi->createProducts();
+
+        }
+        if ($config->enable_products_update){
+
+
             $productApi->updateProducts();
+        }
+        if ($config->enable_products_delete){
+
+            $productApi->deleteAllProducts();
+
         }
 
     }
@@ -62,8 +74,8 @@ class Handlers extends HandlerAbstract
 
     public static function ormAfterWriteShopOrder($params)
     {
-
-        if (($params['flag'] == \RS\Orm\AbstractObject::INSERT_FLAG)) { //Если это создание заявки
+        $config = \RS\Config\Loader::byModule('CrmB24');
+        if (($params['flag'] == \RS\Orm\AbstractObject::INSERT_FLAG) && $config['enable_deal']) { //Если это создание заявки
             $orderApi = new OrderApi();
             $orderApi->addOrder($params['orm']);
         }
@@ -71,13 +83,15 @@ class Handlers extends HandlerAbstract
 
     public static function ormBeforeWriteFeedbackResultItem($params)
     {
-
-        if (($params['flag'] == \RS\Orm\AbstractObject::INSERT_FLAG)) { //Если это создание заявки
+        $config = \RS\Config\Loader::byModule('CrmB24');
+        if (($params['flag'] == \RS\Orm\AbstractObject::INSERT_FLAG) && $config['enable_lead']) { //Если это создание заявки
             /**
              * Получаем из параметра ORM объект
              * @var \Feedback\Model\Orm\ResultItem
              */
-
+			 $leadApi = new LeadApi();
+			 $leadApi->addLead($params['orm']);
+			
         }
     }
 
