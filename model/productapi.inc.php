@@ -53,6 +53,7 @@ class ProductApi extends Bitrix
             Log::write('Обновлению подлежит_'.count($result)."_товаров");
             foreach($result as $offer){
                 $this->updateProduct($offer);
+                time_nanosleep(0, 400000000);
             }
         }
 
