@@ -19,8 +19,8 @@ class UserApi extends Bitrix
      */
     public function addUser($user)
     {
-        $newUser['fields']['NAME'] = $user->name;
-        $newUser['fields']['LAST_NAME'] = $user->surname;
+        $newUser['fields']['NAME'] = (isset($user->name)) ? $user->name :"Не указан";
+        $newUser['fields']['LAST_NAME'] = (isset($user->surname)) ? $user->name :"Не указан";
 		  
         $newUser['fields']['PHONE'][0]['VALUE'] = $user->phone;
         $newUser['fields']['PHONE'][0]['TYPE'] = 'WORK';
