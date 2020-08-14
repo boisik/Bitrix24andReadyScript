@@ -33,7 +33,9 @@ class OrderApi extends Bitrix
         $newOrder['fields']['UTM_SOURCE'] = $order['utm_source'];
         $newOrder['fields']['UTM_MEDIUM'] = $order['utm_medium'];
         $newOrder['fields']['SOURCE_ID'] = 'STORE';
-        $newOrder['params']['REGISTER_SONET_EVENT'] = "Y";
+		$newOrder['fields']['UF_CRM_1596533619467'] = $order['order_num'];
+		$newOrder['fields']['SOURCE_DESCRIPTION'] = 'Интернет-магазин '.$_SERVER['SERVER_NAME'];
+		$newOrder['params']['REGISTER_SONET_EVENT'] = "Y";
 		
 		if (empty($order['utm_source'])){
 			$source=$order->getSource();
@@ -45,13 +47,13 @@ class OrderApi extends Bitrix
         $payment = $order->getPayment();
         $address = $order->getAddress();
 		
-		if(isset($address['addr_address'])){
+		if(isset($address['addr_address']) && $address['addr_address']!='-'){
 			$customAddres =$address['addr_address'];
-		}elseif(isset($address['city'])){
+		}elseif(isset($address['city']) && $address['city']!='-'){
 			$customAddres =$address['city'];		
-		}elseif(isset($address['address'])){
+		}elseif(isset($address['address']) && $address['address']!='-'){
 			$customAddres =$address['address'];
-		}
+		}	
 		
         
         $newOrder['fields']['COMMENTS'].=
@@ -100,6 +102,8 @@ class OrderApi extends Bitrix
 
         $response = $this->requestToCRM($userInfo,self::ADD_CONTACT_TO_ORDER_REQ);
 
+
+
    }
 
    /**
@@ -136,6 +140,21 @@ class OrderApi extends Bitrix
                 $productsInfo['rows'][] = $comission;
             }
         }
+		
+		$itemsC = $order->getcart()->getCartItemsByType('coupon');	
+		
+			
+		
+        if ($itemsC){
+            foreach($itemsC as $uniq=>$item){
+				 $obj = new \Shop\Model\Orm\Discount($item['entity_id']);
+				 echo("<pre>");
+		
+                $coupon['PRODUCT_NAME'] = "В заказе присутствует  ".$item['title']."  ".$obj['discount']."  ".$obj['discount_type'];
+               
+                $productsInfo['rows'][] = $coupon;
+            }
+        }	
 
 
         Log::write('Добавление товаров к заказу '.$order['bitrix_id']);
