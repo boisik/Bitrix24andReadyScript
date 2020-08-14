@@ -32,6 +32,7 @@ class OrderApi extends Bitrix
         $newOrder['fields']['UTM_TERM'] = $order['utm_term'];
         $newOrder['fields']['UTM_SOURCE'] = $order['utm_source'];
         $newOrder['fields']['UTM_MEDIUM'] = $order['utm_medium'];
+        $newOrder['fields']['SOURCE_ID'] = 'STORE';
         $newOrder['params']['REGISTER_SONET_EVENT'] = "Y";
 		
 		if (empty($order['utm_source'])){
@@ -98,7 +99,7 @@ class OrderApi extends Bitrix
         Log::write('Добавление контакта к заказу '.$order['bitrix_id']);
 
         $response = $this->requestToCRM($userInfo,self::ADD_CONTACT_TO_ORDER_REQ);
-        var_dump($response);
+
    }
 
    /**

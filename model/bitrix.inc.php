@@ -21,6 +21,10 @@ class Bitrix
 
     function requestToCRM($data, $method)
     {
+
+        $log_str = "request: method = $method, params = ".serialize($data);
+        Log::write($log_str);
+
         $hookUrl = $this->config->crm_hook;
         $queryUrl = $hookUrl.$method.".json";
 
@@ -47,6 +51,10 @@ class Bitrix
             Log::write($text);
             Log::write($response['error_description']);
         }
+
+            $log_str = serialize($response);
+            Log::write($log_str);
+
 
         return $response;
     }
