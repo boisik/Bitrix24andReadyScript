@@ -71,19 +71,25 @@ class ProductApi extends Bitrix
          * @var \Catalog\Model\Orm\Product $product
          */
         $product = $offer->getProduct();
-        $newProduct['id']= $offer['bitrix_id'];
-       // $newProduct['fields']['ACTIVE'] = $product['public'] ? 'да' : 'нет';
+        $newProduct['fields']['ACTIVE'] = 'Y';
         $newProduct['fields']['DESCRIPTION'] = strip_tags($product->short_description, '<h3><ul><li><p><br>');
         $newProduct['fields']['PRICE'] = str_replace(' ', '', $product->getCost(null,$offer->id));
         $offerTitle = ($offer['title']) ? "__Комплектация__".$offer['title']: ' ';
         $newProduct['fields']['NAME'] =$product['title'].$offerTitle;
 
         $mainImageId = $offer->getMainPhotoId();
-        $mainImage = new \Photo\Model\Orm\Image($mainImageId);
+        if ($mainImageId){
+            $mainImage = new \Photo\Model\Orm\Image($mainImageId);
+            $imageUrl = $mainImage->getUrl('200','200','axy');
+        }else{
+            $imageUrl= $product->getMainImage();
+        }
+
         $http_request = HttpRequest::commonInstance();
         $request_host = $http_request->getProtocol() . '://' . $http_request->getDomainStr();
-        $imageUrl = $mainImage->getOriginalUrl();
-        $newProduct['fields']['PREVIEW_PICTURE'] =$request_host.$imageUrl;
+
+        $imageData = base64_encode(file_get_contents($request_host.$imageUrl));
+        $newProduct['fields']['PREVIEW_PICTURE']['fileData'] =array($imageUrl,$imageData);
 
 
         Log::write('Обновление_'.$newProduct['fields']['NAME']);
@@ -127,22 +133,31 @@ class ProductApi extends Bitrix
          * @var \Catalog\Model\Orm\Product $product
          */
         $product = $offer->getProduct();
-        $newProduct['fields']['ACTIVE'] = $product['public'] ? 'да' : 'нет';
+        $newProduct['fields']['ACTIVE'] = 'Y';
         $newProduct['fields']['DESCRIPTION'] = strip_tags($product->short_description, '<h3><ul><li><p><br>');
         $newProduct['fields']['PRICE'] = str_replace(' ', '', $product->getCost(null,$offer->id));
         $offerTitle = ($offer['title']) ? "__Комплектация__".$offer['title']: ' ';
         $newProduct['fields']['NAME'] =$product['title'].$offerTitle;
 
         $mainImageId = $offer->getMainPhotoId();
-        $mainImage = new \Photo\Model\Orm\Image($mainImageId);
+        if ($mainImageId){
+            $mainImage = new \Photo\Model\Orm\Image($mainImageId);
+            $imageUrl = $mainImage->getUrl('200','200','axy');
+        }else{
+            $imageUrl= $product->getMainImage();
+        }
+
         $http_request = HttpRequest::commonInstance();
         $request_host = $http_request->getProtocol() . '://' . $http_request->getDomainStr();
-        $imageUrl = $mainImage->getOriginalUrl();
-        $newProduct['fields']['PREVIEW_PICTURE'] =$request_host.$imageUrl;
+        //
 
 
+        $imageData = base64_encode(file_get_contents($request_host.$imageUrl));
+        $newProduct['fields']['PREVIEW_PICTURE']['fileData'] =array($imageUrl,$imageData);
+echo ('<pre>');
+var_dump($newProduct);
         Log::write('Импорт_'.$newProduct['fields']['NAME']);
-        $response = $this->requestToCRM($newProduct,self::ADD_PRODUCT_REQ);
+       $response = $this->requestToCRM($newProduct,self::ADD_PRODUCT_REQ);
         if ($response['result']){
             Log::write('Присваивается идентификатор_'.$response['result']);
             $offer['bitrix_id'] = $response['result'];
